@@ -6,6 +6,7 @@ import requests
 #Input: "data/characters.csv"
 #Output: np.ndarray
 def read_character_data(file_path: str):
+    return np.genfromtxt(file_path, delimiter=',', dtype=str, skip_header=1)
     pass
 
 
@@ -22,7 +23,16 @@ def read_character_data(file_path: str):
 #     ['Johnny', 'Rocker']
 # ] 
 def clean_missing_data(data: np.ndarray):
-     pass
+    temiz = []
+    for satir in data:
+        eksik = False
+        for hucre in satir:
+            if hucre is None or hucre == "" or hucre == "NaN":
+                eksik = True
+                break
+        if not eksik:
+            temiz.append(satir)
+    return np.array(temiz)
 
 
 # 3) Sadece belirli bir karakter sınıfına (örneğin "Netrunner") ait kayıtları döndür
@@ -35,6 +45,11 @@ def clean_missing_data(data: np.ndarray):
 # ], 'Netrunner'
 #Output: [['T-Bug', 'Netrunner']]
 def filter_by_class(data: np.ndarray, class_name: str):
+    filtered_data = []
+    for row in data:
+        if row[1] == class_name:
+            filtered_data.append(row)
+    return np.array(filtered_data)
     pass
 
 
@@ -48,6 +63,11 @@ def filter_by_class(data: np.ndarray, class_name: str):
 # Output: 
 # ['JohnnySilverhand']
 def get_long_names(data: np.ndarray):
+    long_names = []
+    for row in data:
+        if len(row[0]) > 10:
+            long_names.append(row[0])
+    return long_names
     pass
 
 
@@ -64,6 +84,11 @@ def get_long_names(data: np.ndarray):
 #     ['T-BUG', 'Netrunner']
 # ]
 def uppercase_names(data: np.ndarray):
+    uppercased_data = []
+    for row in data:
+        uppercased_row = [row[0].upper(), row[1]]
+        uppercased_data.append(uppercased_row)
+    return np.array(uppercased_data)
     pass
 
 # 6) Sahte bir API'den karakter bilgilerini al
@@ -74,6 +99,8 @@ def uppercase_names(data: np.ndarray):
 # https://rickandmortyapi.com/api/character
 # Output: requests.Response objesi (status_code + JSON data içeren)
 def fetch_character_api_data(api_url: str):
+    response = requests.get(api_url)
+    return response
     pass
 
 
@@ -82,6 +109,10 @@ def fetch_character_api_data(api_url: str):
 # Input: requests.Response
 # Output: True ya da False
 def validate_api_response(response: requests.Response):
+    if response.status_code == 200:
+        return True
+    else:
+        return False
     pass
 
 # 8) API’den gelen JSON verisinden "name" alanlarını çek
@@ -95,6 +126,10 @@ def validate_api_response(response: requests.Response):
 # }
 # Output: ['V', 'Johnny']
 def extract_names_from_api(json_data: dict):
+    isimler = []
+    for kullanici in json_data["users"]:
+        isimler.append(kullanici["name"])
+    return isimler
     pass
 
 # 9) Bir string içindeki özel karakterleri temizle (örneğin: %, $, ! vs.)
@@ -102,6 +137,7 @@ def extract_names_from_api(json_data: dict):
 # Input: "Hello@Cyber#punk!"
 # Output: "HelloCyberpunk"
 def clean_special_characters(s: str):
+    return s.replace('@', '').replace('#', '').replace('!', '')
     pass
 
 # 10) Dosyadan gelen verileri ve API'den gelenleri birleştir
@@ -118,4 +154,10 @@ def clean_special_characters(s: str):
 #     ['T-Bug', 'API']
 # ]
 def merge_local_and_api_data(local_data: np.ndarray, api_names: list):
+    merged_data = []
+    for row in local_data:
+        merged_data.append(row)
+    for name in api_names:
+        merged_data.append([name, 'API'])
+    return np.array(merged_data)
     pass
